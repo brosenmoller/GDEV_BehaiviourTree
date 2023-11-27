@@ -10,36 +10,22 @@
 
         public NodeStatus Tick()
         {
-            NodeStatus oldStatus = Status;
-            Status = Evaluate();
-
-            if (oldStatus == NodeStatus.Uninitialised)
+            if (Status == NodeStatus.Uninitialised)
             {
-                switch (Status)
-                {
-                    case NodeStatus.Running:
-                        OnEnter(); break;
-                    case NodeStatus.Failed:
-                        return NodeStatus.Failed;
-                    case NodeStatus.Succes:
-                        return NodeStatus.Succes;
-                }
+                Status = NodeStatus.Running;
+                OnEnter();
             }
 
-            switch (Status)
+            OnUpdate();
+
+            NodeStatus returnStatus = Status;
+
+            if (Status == NodeStatus.Succes || Status == NodeStatus.Failed)
             {
-                case NodeStatus.Running:
-                    OnUpdate();
-                    return NodeStatus.Running;
-                case NodeStatus.Failed:
-                    Reset();
-                    return NodeStatus.Failed;
-                case NodeStatus.Succes:
-                    Reset();
-                    return NodeStatus.Succes;
-                default:
-                    return NodeStatus.Failed;
+                Reset();
             }
+
+            return returnStatus;
         }
 
         private void Reset()
@@ -47,8 +33,6 @@
             Status = NodeStatus.Uninitialised;
             OnExit();
         }
-
-        public abstract NodeStatus Evaluate();
     }
 }
 

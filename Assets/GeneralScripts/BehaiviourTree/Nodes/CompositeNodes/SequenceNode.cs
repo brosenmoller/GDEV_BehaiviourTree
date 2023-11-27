@@ -6,20 +6,20 @@
         
         public SequenceNode(params Node[] childNodes) : base(childNodes) { }
 
-        public override NodeStatus Evaluate()
+        public override void OnUpdate()
         {
             for (; index < childNodes.Length; index++) 
             {
                 switch (childNodes[index].Tick())
                 {
-                    case NodeStatus.Running: return NodeStatus.Running;
-                    case NodeStatus.Failed: index = 0; return NodeStatus.Failed;
+                    case NodeStatus.Running: Status = NodeStatus.Running; return;
+                    case NodeStatus.Failed: index = 0; Status = NodeStatus.Failed; return;
                     case NodeStatus.Succes: continue;
                 }
             }
 
             index = 0;
-            return NodeStatus.Succes;
+            Status = NodeStatus.Succes;
         }
     }
 }

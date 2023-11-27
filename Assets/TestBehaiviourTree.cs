@@ -20,16 +20,6 @@ public class HelloWorldNode : Node
 {
     private float timer;
 
-    public override NodeStatus Evaluate()
-    {
-        if (Status == NodeStatus.Uninitialised)
-        {
-            return NodeStatus.Running;
-        }
-
-        return Status;
-    }
-
     public override void OnEnter()
     {
         Debug.Log("Hello World");

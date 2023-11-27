@@ -4,20 +4,20 @@
     {
         public InverterNode(Node child) : base(child) { }
 
-        public override NodeStatus Evaluate()
+        public override void OnUpdate()
         {
             NodeStatus childStatus = child.Tick();
 
             switch (childStatus)
             {
                 case NodeStatus.Succes:
-                    return NodeStatus.Failed;
+                    Status = NodeStatus.Failed; break;
                 case NodeStatus.Failed:
-                    return NodeStatus.Succes;
+                    Status = NodeStatus.Succes; break;
                 case NodeStatus.Running:
-                    return NodeStatus.Running;
+                    Status = NodeStatus.Running; break;
                 default:
-                    return NodeStatus.Succes;
+                    Status = NodeStatus.Succes; break;
             }
         }
     }

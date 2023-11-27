@@ -11,15 +11,15 @@ namespace BehaiviourTree
             this.condition = condition;
         }
 
-        public override NodeStatus Evaluate()
+        public override void OnUpdate()
         {
             if (condition())
             {
-                return child.Tick();
+                Status = child.Tick();
             }
             else
             {
-                return NodeStatus.Failed;
+                Status = NodeStatus.Failed;
             }
         }
     }
