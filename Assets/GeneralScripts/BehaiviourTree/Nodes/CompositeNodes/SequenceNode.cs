@@ -14,12 +14,12 @@
                 {
                     case NodeStatus.Running: Status = NodeStatus.Running; return;
                     case NodeStatus.Failed: index = 0; Status = NodeStatus.Failed; return;
-                    case NodeStatus.Succes: continue;
+                    case NodeStatus.Success: continue;
                 }
             }
 
             index = 0;
-            Status = NodeStatus.Succes;
+            Status = NodeStatus.Success;
         }
     }
 }

@@ -7,7 +7,7 @@ public class TestBehaiviourTree : MonoBehaviour
 
     private void Awake()
     {
-        tree = new SequenceNode(new HelloWorldNode());
+        tree = new SequenceNode(new HelloWorldNode(), new HelloWorldNode());
     }
 
     private void Update()
@@ -32,7 +32,7 @@ public class HelloWorldNode : Node
         timer += Time.deltaTime;
         if (timer > 2)
         {
-            Status = NodeStatus.Succes;
+            Status = NodeStatus.Success;
         }
     }
 

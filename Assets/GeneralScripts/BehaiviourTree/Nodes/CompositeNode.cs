@@ -8,6 +8,15 @@
         {
             this.childNodes = childNodes;
         }
+
+        public override void SetupBlackboard(BlackBoard blackboard)
+        {
+            base.SetupBlackboard(blackboard);
+            foreach (Node node in childNodes)
+            {
+                node.SetupBlackboard(blackboard);
+            }
+        }
     }
 }
 

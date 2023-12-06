@@ -10,14 +10,14 @@
 
             switch (childStatus)
             {
-                case NodeStatus.Succes:
+                case NodeStatus.Success:
                     Status = NodeStatus.Failed; break;
                 case NodeStatus.Failed:
-                    Status = NodeStatus.Succes; break;
+                    Status = NodeStatus.Success; break;
                 case NodeStatus.Running:
                     Status = NodeStatus.Running; break;
                 default:
-                    Status = NodeStatus.Succes; break;
+                    Status = NodeStatus.Success; break;
             }
         }
     }

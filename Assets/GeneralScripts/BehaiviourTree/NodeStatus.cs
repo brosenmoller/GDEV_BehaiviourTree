@@ -3,7 +3,7 @@ namespace BehaiviourTree
 {
     public enum NodeStatus
     {
-        Succes,
+        Success,
         Running,
         Failed,
         Uninitialised,
