@@ -14,6 +14,11 @@ public class Guard : MonoBehaviour
     [Header("Waypoints")]
     [SerializeField] private Transform[] wayPoints;
 
+    [Header("Attack")]
+    [SerializeField] private float attackRange;
+    [SerializeField] private float attackAngle;
+    [SerializeField] private LayerMask attackableMask;
+
     [Header("Field Of View")]
     [SerializeField] private float viewRadius;
     [SerializeField] private float viewAngle;
@@ -37,6 +42,7 @@ public class Guard : MonoBehaviour
         blackBoard = new BlackBoard();
         blackBoard.SetVariable(VariableNames.CURRENT_WAYPOINT_INDEX_Int, 0);
         blackBoard.SetVariable<GameObject>(VariableNames.HELT_WEAPON_GameObject, null);
+        blackBoard.SetVariable(VariableNames.SEARCHING_FOR_WEAPON_Bool, false);
 
         Node patrolTree = new SequenceNode(
             new SetTargetToNextWaypoint(wayPoints),
@@ -51,7 +57,11 @@ public class Guard : MonoBehaviour
         Node playerDetectionTree = new ResettingSequenceNode(
             new DetectObjectsNode(transform, viewRadius, viewAngle, targetMask, obstacleMask),
             new ConditionNode(
-                playerChaseTree,
+                new ConditionSplitNode(
+                    playerChaseTree,
+                    new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.SEARCHING_FOR_WEAPON_Bool, true)),
+                    () => blackBoard.GetVariable<GameObject>(VariableNames.HELT_WEAPON_GameObject) != null
+                 ),
                 () => blackBoard.GetVariable<Transform[]>(VariableNames.VISIBLE_TARGETS_TransformArray).Contains(playerTransform)
             )
         );
@@ -66,7 +76,7 @@ public class Guard : MonoBehaviour
                 )
             ),
             new MoveToTargetPositionNode(agent, moveSpeed, stoppingDistance)
-            // Pickup Weapon Node
+            // TODO: Pickup Weapon Node
         );
 
         Node weaponSearchTree = new ConditionNode(
@@ -80,11 +90,24 @@ public class Guard : MonoBehaviour
                     )
                 )
              ),
-             () => !blackBoard.GetVariable<bool>(VariableNames.SEARCHING_FOR_WEAPON_Bool) || 
-                    blackBoard.GetVariable<GameObject>(VariableNames.HELT_WEAPON_GameObject) == null
+             () => blackBoard.GetVariable<bool>(VariableNames.SEARCHING_FOR_WEAPON_Bool)
         );
 
-        tree = new SelectorNode(weaponSearchTree, playerDetectionTree, patrolTree);
+        Node attackTree = new ResettingSequenceNode(
+            new DetectObjectsNode(transform, attackRange, attackAngle, attackableMask, obstacleMask),
+            new ConditionNode(
+                new SequenceNode(), // TODO: This should be Attack Node
+                () => blackBoard.GetVariable<Transform[]>(VariableNames.VISIBLE_TARGETS_TransformArray).Contains(playerTransform)
+            )
+         );
+
+        Node weaponTree = new ConditionSplitNode(
+            attackTree,
+            weaponSearchTree,
+            () => blackBoard.GetVariable<GameObject>(VariableNames.HELT_WEAPON_GameObject) != null
+        );
+
+        tree = new SelectorNode(weaponTree, playerDetectionTree, patrolTree);
 
         tree.SetupBlackboard(blackBoard);
     }
