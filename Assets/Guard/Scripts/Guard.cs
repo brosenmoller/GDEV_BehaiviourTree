@@ -18,6 +18,7 @@ public class Guard : MonoBehaviour
     [SerializeField] private float attackRange;
     [SerializeField] private float attackAngle;
     [SerializeField] private LayerMask attackableMask;
+    [SerializeField] private Transform weaponHolder;
 
     [Header("Field Of View")]
     [SerializeField] private float viewRadius;
@@ -33,6 +34,8 @@ public class Guard : MonoBehaviour
     private BlackBoard blackBoard;
     private Transform playerTransform;
 
+    private BlackBoard ninjaBlackboard;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -45,11 +48,13 @@ public class Guard : MonoBehaviour
         blackBoard.SetVariable(VariableNames.SEARCHING_FOR_WEAPON_Bool, false);
 
         Node patrolTree = new SequenceNode(
+            new ActionExecuterNode(() => ninjaBlackboard.SetVariable(VariableNames.PLAYER_CHASED_Bool, false)),
             new SetTargetToNextWaypoint(wayPoints),
             new MoveToTargetPositionNode(agent, moveSpeed, stoppingDistance)
         );
 
         Node playerChaseTree = new SequenceNode(
+            new ActionExecuterNode(() => ninjaBlackboard.SetVariable(VariableNames.PLAYER_CHASED_Bool, true)),
             new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_TRANSFORM, playerTransform)),
             new MoveToTargetTransformNode(agent, moveSpeed, stoppingDistance)
         );
@@ -75,8 +80,8 @@ public class Guard : MonoBehaviour
                     ).position
                 )
             ),
-            new MoveToTargetPositionNode(agent, moveSpeed, stoppingDistance)
-            // TODO: Pickup Weapon Node
+            new MoveToTargetPositionNode(agent, moveSpeed, stoppingDistance),
+            new PickupWeaponNode(weaponHolder)
         );
 
         Node weaponSearchTree = new ConditionNode(
@@ -96,7 +101,7 @@ public class Guard : MonoBehaviour
         Node attackTree = new ResettingSequenceNode(
             new DetectObjectsNode(transform, attackRange, attackAngle, attackableMask, obstacleMask),
             new ConditionNode(
-                new SequenceNode(), // TODO: This should be Attack Node
+                new MeleeAttackNode(agent, animator, 1f),
                 () => blackBoard.GetVariable<Transform[]>(VariableNames.VISIBLE_TARGETS_TransformArray).Contains(playerTransform)
             )
          );
@@ -112,10 +117,13 @@ public class Guard : MonoBehaviour
         tree.SetupBlackboard(blackBoard);
     }
 
-    private void Update()
+    private void Start()
     {
-        tree.Tick();
+        ninjaBlackboard = FindObjectOfType<Ninja>().blackBoard;
+    }
 
+    private void FixedUpdate()
+    {
         if (agent.isStopped)
         {
             animator.SetBool("Moving", false);
@@ -125,27 +133,34 @@ public class Guard : MonoBehaviour
             animator.SetBool("Moving", true);
         }
 
-        //Transform[] visibleTransforms = blackBoard.GetVariable<Transform[]>(VariableNames.VISIBLE_TARGETS_TransformArray);
-        //for (int i = 0; i < visibleTransforms.Length; i++)
-        //{
-        //    Debug.Log(visibleTransforms[i].gameObject.name);
-        //}
+        tree.Tick();
     }
 
     private void OnDrawGizmos()
     {
-        Vector3 forwardDirection = transform.forward * viewRadius;
         Vector3 higherTransform = transform.position + Vector3.up * 2;
 
-        Gizmos.color = Color.yellow;
-
+        // Vision
+        Gizmos.color = Color.blue;
+        Vector3 visionForward = transform.forward * viewRadius;
         for (float angle = -viewAngle / 2; angle < viewAngle / 2; angle += viewAngle / visualisationLines)
         {
-            Gizmos.DrawLine(higherTransform, higherTransform + Quaternion.AngleAxis(angle, transform.up) * forwardDirection);
+            Gizmos.DrawLine(higherTransform, higherTransform + Quaternion.AngleAxis(angle, transform.up) * visionForward);
         }
 
-        Vector3 right = Quaternion.AngleAxis(viewAngle / 2, transform.up) * forwardDirection;
-        Gizmos.DrawLine(higherTransform, higherTransform + right);
+        Vector3 visionRight = Quaternion.AngleAxis(viewAngle / 2, transform.up) * visionForward;
+        Gizmos.DrawLine(higherTransform, higherTransform + visionRight);
+
+        // Attack Range
+        Gizmos.color = Color.red;
+        Vector3 attackForward = transform.forward * attackRange;
+        for (float angle = -attackAngle / 2; angle < attackAngle / 2; angle += attackAngle / visualisationLines)
+        {
+            Gizmos.DrawLine(higherTransform, higherTransform + Quaternion.AngleAxis(angle, transform.up) * attackForward);
+        }
+
+        Vector3 attackRight = Quaternion.AngleAxis(viewAngle / 2, transform.up) * attackForward;
+        Gizmos.DrawLine(higherTransform, higherTransform + attackRight);
     }
 }
 
