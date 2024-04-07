@@ -35,4 +35,3 @@ public class MeleeAttackNode : Node
         Status = NodeStatus.Running;
     }
 }
-

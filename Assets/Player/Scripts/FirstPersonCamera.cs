@@ -31,4 +31,3 @@ public class FirstPersonCamera : MonoBehaviour
         transform.rotation *= Quaternion.Euler(0, inputService.playerInputActions.PlayerActionMap.MoveCameraX.ReadValue<float>() * lookSpeed, 0);
     }
 }
-

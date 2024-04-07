@@ -36,11 +36,9 @@ public class Ninja : MonoBehaviour
             new SequenceNode(
                 new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_POSITION_Vec3, playerTransform.position)),
                 new MoveToTargetPositionNode(agent, moveSpeed, followDistance)
-            )
-            ,
+            ),
             () => Vector3.Distance(playerTransform.position, transform.position) > followDistance + followDistance / 4
-        )
-            ;
+        );
 
         Node hideTree = new ConditionNode(
             new SequenceNode(

@@ -61,4 +61,3 @@ public class DetectObjectsNode : Node
         Status = NodeStatus.Failed;
     }
 }
-

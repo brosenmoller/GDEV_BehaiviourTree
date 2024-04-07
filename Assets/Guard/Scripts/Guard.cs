@@ -163,5 +163,3 @@ public class Guard : MonoBehaviour
         Gizmos.DrawLine(higherTransform, higherTransform + attackRight);
     }
 }
-
-

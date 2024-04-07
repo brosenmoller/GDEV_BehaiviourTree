@@ -26,4 +26,3 @@ public class SetTargetToNextWaypoint : Node
         Status = NodeStatus.Success;
     }
 }
-

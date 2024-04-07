@@ -29,4 +29,3 @@ public class PickupWeaponNode : Node
         Status = NodeStatus.Success;
     }
 }
-

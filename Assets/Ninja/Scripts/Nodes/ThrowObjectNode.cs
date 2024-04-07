@@ -16,4 +16,3 @@ public class ThrowObjectNode : Node
         target = blackboard.GetVariable<Transform>(VariableNames.THROW_TARGET_Transfom);
     }
 }
-
