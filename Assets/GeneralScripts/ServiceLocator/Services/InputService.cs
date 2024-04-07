@@ -19,4 +19,3 @@ public class InputService : Service
         playerInputActions.Enable();
     }
 }
-

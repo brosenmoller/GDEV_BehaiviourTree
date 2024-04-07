@@ -44,7 +44,7 @@ public class Ninja : MonoBehaviour
 
         Node hideTree = new ConditionNode(
             new SequenceNode(
-                new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_POSITION_Vec3, GetClosestCover())),
+                new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_POSITION_Vec3, GetClosestCover().position)),
                 new MoveToTargetPositionNode(agent, moveSpeed, followDistance),
                 new ThrowObjectNode(smokeBomb)
             ),

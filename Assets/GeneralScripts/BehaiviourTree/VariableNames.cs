@@ -12,6 +12,3 @@
         public const string THROW_TARGET_Transfom = "THROW_TARGET";
     }
 }
-
-
-

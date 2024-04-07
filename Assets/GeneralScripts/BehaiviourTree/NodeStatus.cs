@@ -1,5 +1,4 @@
-﻿
-namespace BehaiviourTree
+﻿namespace BehaiviourTree
 {
     public enum NodeStatus
     {
@@ -9,4 +8,3 @@ namespace BehaiviourTree
         Uninitialised,
     }
 }
-

@@ -88,6 +88,7 @@ public class PlayerMovement : MonoBehaviour
         if (!canMove) { return; }
 
         moveDirection = cameraTransform.forward * inputDirection.y + cameraTransform.right * inputDirection.x;
+        moveDirection.y = 0;
 
         Vector3 moveForce = 10f * moveSpeed * moveDirection.normalized;
         if (!isGrounded) { moveForce *= airMultiplier; }

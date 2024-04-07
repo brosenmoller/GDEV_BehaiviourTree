@@ -41,5 +41,3 @@ public class HelloWorldNode : Node
         Debug.Log("Bye World");
     }
 }
-
-

@@ -6654,6 +6654,14 @@ MonoBehaviour:
   moveSpeed: 10
   stoppingDistance: 0.5
   followDistance: 12
+  ninjaCoverSpots:
+  - {fileID: 763968309}
+  - {fileID: 1214623516}
+  - {fileID: 111193053}
+  - {fileID: 1503016910}
+  - {fileID: 610810920}
+  - {fileID: 1366552349}
+  smokeBomb: {fileID: 0}
 --- !u!1 &8332361616520125610
 GameObject:
   m_ObjectHideFlags: 0
