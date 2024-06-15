@@ -27,6 +27,9 @@ public class Guard : MonoBehaviour
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField, Range(2, 100)] private int visualisationLines;
 
+    [Header("References")]
+    [SerializeField] private StateVisualizer stateVisualizer;
+
     private NavMeshAgent agent;
     private Animator animator;
 
@@ -48,12 +51,14 @@ public class Guard : MonoBehaviour
         blackBoard.SetVariable(VariableNames.SEARCHING_FOR_WEAPON_Bool, false);
 
         Node patrolTree = new SequenceNode(
+            new ActionExecuterNode(() => stateVisualizer.SetText("Patrolling")),
             new ActionExecuterNode(() => ninjaBlackboard.SetVariable(VariableNames.PLAYER_CHASED_Bool, false)),
             new SetTargetToNextWaypoint(wayPoints),
             new MoveToTargetPositionNode(agent, moveSpeed, stoppingDistance)
         );
 
         Node playerChaseTree = new SequenceNode(
+            new ActionExecuterNode(() => stateVisualizer.SetText("Chasing Player")),
             new ActionExecuterNode(() => ninjaBlackboard.SetVariable(VariableNames.PLAYER_CHASED_Bool, true)),
             new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_TRANSFORM, playerTransform)),
             new MoveToTargetTransformNode(agent, moveSpeed, stoppingDistance)
@@ -72,6 +77,7 @@ public class Guard : MonoBehaviour
         );
 
         Node pickupWeaponTree = new SequenceNode(
+            new ActionExecuterNode(() => stateVisualizer.SetText("Picking up Weapon")),
             new ActionExecuterNode(() => blackBoard.SetVariable(
                     VariableNames.TARGET_POSITION_Vec3,
                     Array.Find(
@@ -86,6 +92,7 @@ public class Guard : MonoBehaviour
 
         Node weaponSearchTree = new ConditionNode(
              new ResettingSequenceNode(
+                 new ActionExecuterNode(() => stateVisualizer.SetText("Searching For Weapon")),
                  new DetectObjectsNode(transform, viewRadius, 360, targetMask, obstacleMask),
                  new ConditionNode(
                     pickupWeaponTree,
@@ -101,7 +108,10 @@ public class Guard : MonoBehaviour
         Node attackTree = new ResettingSequenceNode(
             new DetectObjectsNode(transform, attackRange, attackAngle, attackableMask, obstacleMask),
             new ConditionNode(
-                new MeleeAttackNode(agent, animator, 1f),
+                new SequenceNode(
+                    new ActionExecuterNode(() => stateVisualizer.SetText("Attacking")),
+                    new MeleeAttackNode(agent, animator, 1f)
+                ),
                 () => blackBoard.GetVariable<Transform[]>(VariableNames.VISIBLE_TARGETS_TransformArray).Contains(playerTransform)
             )
          );

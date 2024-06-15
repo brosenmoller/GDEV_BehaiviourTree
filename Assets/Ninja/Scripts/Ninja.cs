@@ -16,6 +16,9 @@ public class Ninja : MonoBehaviour
     [SerializeField] private Transform[] ninjaCoverSpots;
     [SerializeField] private GameObject smokeBomb;
 
+    [Header("References")]
+    [SerializeField] private StateVisualizer stateVisualizer;
+
     private NavMeshAgent agent;
     private Animator animator;
 
@@ -34,6 +37,7 @@ public class Ninja : MonoBehaviour
 
         Node followPlayerTree = new ConditionNode(
             new SequenceNode(
+                new ActionExecuterNode(() => stateVisualizer.SetText("Following Player")),
                 new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_POSITION_Vec3, playerTransform.position)),
                 new MoveToTargetPositionNode(agent, moveSpeed, followDistance)
             ),
@@ -42,6 +46,7 @@ public class Ninja : MonoBehaviour
 
         Node hideTree = new ConditionNode(
             new SequenceNode(
+                new ActionExecuterNode(() => stateVisualizer.SetText("Hiding")),
                 new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_POSITION_Vec3, GetClosestCover().position)),
                 new MoveToTargetPositionNode(agent, moveSpeed, followDistance),
                 new ThrowObjectNode(smokeBomb)
@@ -49,7 +54,7 @@ public class Ninja : MonoBehaviour
             () => blackBoard.GetVariable<bool>(VariableNames.PLAYER_CHASED_Bool)
         );
 
-        tree = new SelectorNode(hideTree, followPlayerTree);
+        tree = new SelectorNode(hideTree, followPlayerTree, new ActionExecuterNode(() => stateVisualizer.SetText("Idling")));
 
         tree.SetupBlackboard(blackBoard);
     }

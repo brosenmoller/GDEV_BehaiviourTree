@@ -21,6 +21,7 @@ public class MeleeAttackNode : Node
     {
         animator.SetTrigger("Attack");
         agent.isStopped = true;
+
         timer = attackDuration + Time.time;
         Status = NodeStatus.Running;
     }
