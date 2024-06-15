@@ -60,7 +60,7 @@ public class Guard : MonoBehaviour
         Node playerChaseTree = new SequenceNode(
             new ActionExecuterNode(() => stateVisualizer.SetText("Chasing Player")),
             new ActionExecuterNode(() => ninjaBlackboard.SetVariable(VariableNames.PLAYER_CHASED_Bool, true)),
-            new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_TRANSFORM, playerTransform)),
+            new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_Transform, playerTransform)),
             new MoveToTargetTransformNode(agent, moveSpeed, stoppingDistance)
         );
 

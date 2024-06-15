@@ -20,7 +20,7 @@ namespace BehaiviourTree
 
         public override void OnEnter()
         {
-            targetTransform = blackboard.GetVariable<Transform>(VariableNames.TARGET_TRANSFORM);
+            targetTransform = blackboard.GetVariable<Transform>(VariableNames.TARGET_Transform);
 
             if (targetTransform == null || agent == null) { Status = NodeStatus.Failed; return; }
 
