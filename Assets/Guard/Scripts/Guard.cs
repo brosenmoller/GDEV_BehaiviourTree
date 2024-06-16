@@ -122,7 +122,12 @@ public class Guard : MonoBehaviour
             () => blackBoard.GetVariable<GameObject>(VariableNames.HELT_WEAPON_GameObject) != null
         );
 
-        tree = new SelectorNode(weaponTree, playerDetectionTree, patrolTree);
+        Node stunTree = new ConditionNode(
+            new ActionExecuterNode(() => Debug.Log("Stunned")),
+            () => blackBoard.GetVariable<bool>(VariableNames.IS_STUNNED_Bool)
+        );
+
+        tree = new SelectorNode(stunTree, weaponTree, playerDetectionTree, patrolTree);
 
         tree.SetupBlackboard(blackBoard);
     }
@@ -144,6 +149,11 @@ public class Guard : MonoBehaviour
         }
 
         tree.Tick();
+    }
+
+    public void GetSmoked()
+    {
+        blackBoard.SetVariable(VariableNames.IS_STUNNED_Bool, true);
     }
 
     private void OnDrawGizmos()

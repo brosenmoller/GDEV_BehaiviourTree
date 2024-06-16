@@ -54,7 +54,12 @@ public class Ninja : MonoBehaviour
             () => blackBoard.GetVariable<bool>(VariableNames.PLAYER_CHASED_Bool)
         );
 
-        tree = new SelectorNode(hideTree, followPlayerTree, new ActionExecuterNode(() => stateVisualizer.SetText("Idling")));
+        Node idleTree = new SequenceNode(
+            new ActionExecuterNode(() => stateVisualizer.SetText("Idling")),
+            new ActionExecuterNode(() => agent.isStopped = true)
+         );
+
+        tree = new SelectorNode(hideTree, followPlayerTree, idleTree);
 
         tree.SetupBlackboard(blackBoard);
     }

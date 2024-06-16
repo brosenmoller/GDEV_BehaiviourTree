@@ -14,5 +14,6 @@ public class ThrowObjectNode : Node
     public override void OnEnter()
     {
         target = blackboard.GetVariable<Transform>(VariableNames.THROW_TARGET_Transfom);
+        Debug.Log("Throw Bomb");
     }
 }

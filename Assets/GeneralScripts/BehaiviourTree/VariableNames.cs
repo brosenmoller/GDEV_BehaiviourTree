@@ -10,5 +10,6 @@
         public const string SEARCHING_FOR_WEAPON_Bool = "SEARCHING_FOR_WEAPON";
         public const string PLAYER_CHASED_Bool = "PLAYER_CHASED";
         public const string THROW_TARGET_Transfom = "THROW_TARGET";
+        public const string IS_STUNNED_Bool = "IS_STUNNED";
     }
 }
