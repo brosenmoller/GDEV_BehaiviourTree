@@ -50,6 +50,7 @@ namespace BehaiviourTree
 
         public override void OnExit()
         {
+            Debug.Log("Patrol Exit");
             agent.isStopped = true;
         }
     }

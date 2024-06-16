@@ -11,6 +11,8 @@ public class SetTargetToNextWaypoint : Node
 
     public override void OnEnter()
     {
+        Debug.Log("Set Waypoint");
+
         int currentIndex = blackboard.GetVariable<int>(VariableNames.CURRENT_WAYPOINT_INDEX_Int);
         
         currentIndex++;

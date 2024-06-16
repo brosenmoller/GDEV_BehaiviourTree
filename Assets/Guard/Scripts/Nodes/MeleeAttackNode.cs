@@ -19,6 +19,7 @@ public class MeleeAttackNode : Node
 
     public override void OnEnter()
     {
+        Debug.Log("Attack");
         animator.SetTrigger("Attack");
         agent.isStopped = true;
 
@@ -33,6 +34,9 @@ public class MeleeAttackNode : Node
             agent.isStopped = false;
             Status = NodeStatus.Success;
         }
-        Status = NodeStatus.Running;
+        else
+        {
+            Status = NodeStatus.Running;
+        }
     }
 }

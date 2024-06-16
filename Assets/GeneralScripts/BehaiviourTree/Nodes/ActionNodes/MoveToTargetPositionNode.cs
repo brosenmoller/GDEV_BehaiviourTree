@@ -22,7 +22,11 @@ namespace BehaiviourTree
         {
             targetPosition = blackboard.GetVariable<Vector3>(VariableNames.TARGET_POSITION_Vec3);
 
+            Debug.Log("Pre Check");
+
             if (targetPosition == null || agent == null) { Status = NodeStatus.Failed; return; }
+
+            Debug.Log("Post Check");
 
             agent.speed = moveSpeed;
             agent.stoppingDistance = stoppingDistance;

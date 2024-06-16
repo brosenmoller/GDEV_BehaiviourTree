@@ -50,14 +50,17 @@ public class Guard : MonoBehaviour
         blackBoard.SetVariable<GameObject>(VariableNames.HELT_WEAPON_GameObject, null);
         blackBoard.SetVariable(VariableNames.SEARCHING_FOR_WEAPON_Bool, false);
 
-        Node patrolTree = new SequenceNode(
+        Node patrolTree = new ResettingSequenceNode(
             new ActionExecuterNode(() => stateVisualizer.SetText("Patrolling")),
             new ActionExecuterNode(() => ninjaBlackboard.SetVariable(VariableNames.PLAYER_CHASED_Bool, false)),
-            new SetTargetToNextWaypoint(wayPoints),
-            new MoveToTargetPositionNode(agent, moveSpeed, stoppingDistance)
+            new ResettingSequenceNode(
+                new SetTargetToNextWaypoint(wayPoints),
+                new ActionExecuterNode(() => Debug.Log("Set Target After this")),
+                new MoveToTargetPositionNode(agent, moveSpeed, stoppingDistance)
+            )
         );
 
-        Node playerChaseTree = new SequenceNode(
+        Node playerChaseTree = new ResettingSequenceNode(
             new ActionExecuterNode(() => stateVisualizer.SetText("Chasing Player")),
             new ActionExecuterNode(() => ninjaBlackboard.SetVariable(VariableNames.PLAYER_CHASED_Bool, true)),
             new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_Transform, playerTransform)),
@@ -108,7 +111,7 @@ public class Guard : MonoBehaviour
         Node attackTree = new ResettingSequenceNode(
             new DetectObjectsNode(transform, attackRange, attackAngle, attackableMask, obstacleMask),
             new ConditionNode(
-                new SequenceNode(
+                new ResettingSequenceNode(
                     new ActionExecuterNode(() => stateVisualizer.SetText("Attacking")),
                     new MeleeAttackNode(agent, animator, 1f)
                 ),
@@ -123,7 +126,11 @@ public class Guard : MonoBehaviour
         );
 
         Node stunTree = new ConditionNode(
-            new ActionExecuterNode(() => Debug.Log("Stunned")),
+            new ResettingSequenceNode(
+                new ActionExecuterNode(() => stateVisualizer.SetText("Stunned")),
+                new ActionExecuterNode(() => ninjaBlackboard.SetVariable(VariableNames.PLAYER_CHASED_Bool, false)),
+                new ActionExecuterNode(() => agent.isStopped = true)
+            ),
             () => blackBoard.GetVariable<bool>(VariableNames.IS_STUNNED_Bool)
         );
 
@@ -151,9 +158,16 @@ public class Guard : MonoBehaviour
         tree.Tick();
     }
 
-    public void GetSmoked()
+    public void GetStunned(float dureation)
     {
         blackBoard.SetVariable(VariableNames.IS_STUNNED_Bool, true);
+        CancelInvoke(nameof(RecoverFromStun));
+        Invoke(nameof(RecoverFromStun), dureation);
+    }
+
+    public void RecoverFromStun()
+    {
+        blackBoard.SetVariable(VariableNames.IS_STUNNED_Bool, false);
     }
 
     private void OnDrawGizmos()

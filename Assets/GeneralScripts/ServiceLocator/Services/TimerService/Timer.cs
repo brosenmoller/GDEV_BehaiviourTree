@@ -5,9 +5,9 @@ public class Timer
 {
     private enum TimerState
     {
-        Running = 0,
-        Paused = 1,
-        Finished = 2,
+        Running,
+        Paused,
+        Finished,
     }
 
     private float currentTime = 0f;
@@ -17,9 +17,11 @@ public class Timer
 
     private TimerState _state = TimerState.Paused;
 
-    private TimerState State {
+    private TimerState State
+    {
         get { return _state; }
-        set {
+        set
+        {
             if (_state != TimerState.Running && value == TimerState.Running)
             {
                 timerService.OnTimerUpdate += UpdateTimer;
@@ -35,25 +37,51 @@ public class Timer
     public float EndTime
     {
         get { return endTime; }
-        set {
+        set
+        {
             if (currentTime > value) { State = TimerState.Finished; }
             else if (IsFinished && currentTime < value) { State = TimerState.Paused; }
 
             endTime = value;
         }
     }
-    public float TimeLeft { get { return endTime - currentTime; } }
+    public float TimeLeft
+    {
+        get { return endTime - currentTime; }
+        set
+        {
+            CurrentTime = endTime - value;
+        }
+    }
+    public float CurrentTime
+    {
+        get { return currentTime; }
+        set
+        {
+            if (endTime <= value)
+            {
+                State = TimerState.Finished;
+                return;
+            }
+            else
+            {
+                if (State == TimerState.Finished)
+                {
+                    State = TimerState.Running;
+                }
+            }
+        }
+    }
     public bool IsRunning { get { return State == TimerState.Running; } }
     public bool IsFinished { get { return State == TimerState.Finished; } }
 
     private readonly TimerService timerService;
 
-    public Timer(float endTime, Action callback = null, bool autoStart = true, bool loop = false) 
+    public Timer(float endTime, Action callback = null, bool autoStart = false, bool loop = false)
     {
+        timerService = ServiceLocator.Instance.Get<TimerService>();
         this.loop = loop;
         this.endTime = endTime;
-
-        timerService = ServiceLocator.Instance.Get<TimerService>();
 
         if (autoStart) { State = TimerState.Running; }
         else { State = TimerState.Paused; }
@@ -64,7 +92,13 @@ public class Timer
     public void SetIsLooping(bool loop)
     {
         this.loop = loop;
-        if (loop && IsFinished) { Reset(); }
+        if (loop && IsFinished) { Restart(); }
+    }
+
+    public void Restart()
+    {
+        Reset();
+        Start();
     }
 
     public void Start()
@@ -72,9 +106,9 @@ public class Timer
         State = TimerState.Running;
     }
 
-    public void UpdateTimer(float deltaTime) 
+    public void UpdateTimer(float delta)
     {
-        currentTime += deltaTime;
+        currentTime += delta;
         if (currentTime >= endTime)
         {
             try { OnTimerEnd?.Invoke(); }
@@ -88,10 +122,9 @@ public class Timer
     public void Reset()
     {
         currentTime = 0f;
-        State = TimerState.Running;
     }
 
-    public void Pause() 
+    public void Pause()
     {
         State = TimerState.Paused;
     }

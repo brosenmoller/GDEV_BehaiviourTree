@@ -15,6 +15,9 @@ public class Ninja : MonoBehaviour
     [Header("Hide")]
     [SerializeField] private Transform[] ninjaCoverSpots;
     [SerializeField] private GameObject smokeBomb;
+    [SerializeField] private Transform throwOrigin;
+    [SerializeField] private float throwSpeed = 10f;
+    [SerializeField] private float throwInterval = 5f;
 
     [Header("References")]
     [SerializeField] private StateVisualizer stateVisualizer;
@@ -45,11 +48,12 @@ public class Ninja : MonoBehaviour
         );
 
         Node hideTree = new ConditionNode(
-            new SequenceNode(
+            new ResettingSequenceNode(
                 new ActionExecuterNode(() => stateVisualizer.SetText("Hiding")),
                 new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_POSITION_Vec3, GetClosestCover().position)),
                 new MoveToTargetPositionNode(agent, moveSpeed, followDistance),
-                new ThrowObjectNode(smokeBomb)
+                new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.THROW_TARGET_Transfom, FindAnyObjectByType<Guard>().transform)),
+                new ThrowObjectNode(smokeBomb, throwOrigin, throwSpeed, throwInterval)
             ),
             () => blackBoard.GetVariable<bool>(VariableNames.PLAYER_CHASED_Bool)
         );
