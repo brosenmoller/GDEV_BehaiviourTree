@@ -26,8 +26,8 @@ public class PlayerMovement : MonoBehaviour
     public bool isGrounded;
     private bool wasGrounded;
 
-    private float groundTimer;
-    private float jumpTimer;
+    private Timer groundTimer;
+    private Timer jumpTimer;
 
     private bool canMove = true;
     private Vector2 inputDirection = Vector2.zero;
@@ -40,6 +40,9 @@ public class PlayerMovement : MonoBehaviour
     {
         rigidBody = GetComponent<Rigidbody>();
         inputService = ServiceLocator.Instance.Get<InputService>();
+
+        groundTimer = new Timer(groundDelay);
+        jumpTimer = new Timer(jumpDelay);
     }
 
     private void Update()
@@ -51,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (wasGrounded && !isGrounded)
         {
-            groundTimer = Time.time + groundDelay;
+            groundTimer.Restart();
             wasGrounded = false;
         }
 
@@ -65,10 +68,11 @@ public class PlayerMovement : MonoBehaviour
     {
         HorizontalMovement();
 
-        if (jumpTimer > Time.time && (groundTimer > Time.time || isGrounded))
+        if (jumpTimer.IsRunning && (groundTimer.IsRunning || isGrounded))
         {
-            jumpTimer = 0;
-            groundTimer = 0;
+            jumpTimer.Pause();
+            groundTimer.Pause();
+
             Jump();
         }
     }
@@ -79,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (inputService.playerInputActions.PlayerActionMap.Jump.IsPressed())
         {
-            jumpTimer = Time.time + jumpDelay;
+            jumpTimer.Restart();
         }
     }
 

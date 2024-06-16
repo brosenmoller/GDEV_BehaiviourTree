@@ -16,32 +16,26 @@ namespace BehaiviourTree
             this.agent = agent;
             this.moveSpeed = moveSpeed;
             this.stoppingDistance = stoppingDistance;
+            Debug.Log(stoppingDistance);
         }
 
         public override void OnEnter()
         {
             targetPosition = blackboard.GetVariable<Vector3>(VariableNames.TARGET_POSITION_Vec3);
 
-            Debug.Log("Pre Check");
-
             if (targetPosition == null || agent == null) { Status = NodeStatus.Failed; return; }
 
-            Debug.Log("Post Check");
-
             agent.speed = moveSpeed;
-            agent.stoppingDistance = stoppingDistance;
             agent.isStopped = false;
             Status = NodeStatus.Running;
-        }
 
+            agent.SetDestination(targetPosition);
+        }
+        
         public override void OnUpdate()
         {
             if (agent.pathPending) { Status = NodeStatus.Running; return; }
             if (agent.hasPath && agent.path.status == NavMeshPathStatus.PathInvalid) { Status = NodeStatus.Failed; return; }
-            if (agent.pathEndPosition != targetPosition)
-            {
-                agent.SetDestination(targetPosition);
-            }
 
             if (Vector3.Distance(agent.transform.position, targetPosition) <= stoppingDistance)
             {

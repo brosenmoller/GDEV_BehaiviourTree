@@ -6,30 +6,28 @@ public class MeleeAttackNode : Node
 {
     private readonly NavMeshAgent agent;
     private readonly Animator animator;
-    private readonly float attackDuration;
-
-    private float timer;
+    private readonly Timer timer;
 
     public MeleeAttackNode(NavMeshAgent agent, Animator animator, float attackDuration)
     {
         this.agent = agent;
         this.animator = animator;
-        this.attackDuration = attackDuration;
+
+        timer = new Timer(attackDuration);
     }
 
     public override void OnEnter()
     {
-        Debug.Log("Attack");
         animator.SetTrigger("Attack");
         agent.isStopped = true;
 
-        timer = attackDuration + Time.time;
+        timer.Restart();
         Status = NodeStatus.Running;
     }
 
     public override void OnUpdate()
     {
-        if (Time.time > timer)
+        if (timer.IsFinished)
         {
             agent.isStopped = false;
             Status = NodeStatus.Success;

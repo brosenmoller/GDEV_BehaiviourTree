@@ -114,7 +114,7 @@ public class Timer
             try { OnTimerEnd?.Invoke(); }
             catch (MissingReferenceException) { }
 
-            if (loop) { Reset(); }
+            if (loop) { Restart(); }
             else { State = TimerState.Finished; }
         }
     }

@@ -26,7 +26,6 @@ namespace BehaiviourTree
 
             agent.speed = moveSpeed;
             agent.isStopped = false;
-            agent.stoppingDistance = stoppingDistance;
             Status = NodeStatus.Running;
         }
 

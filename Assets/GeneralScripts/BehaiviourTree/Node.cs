@@ -5,6 +5,7 @@
         public NodeStatus Status = NodeStatus.Uninitialised;
 
         protected BlackBoard blackboard;
+        private readonly Timer interuptionTimer = new(.3f);
 
         public virtual void OnEnter() { }
         public virtual void OnUpdate() { }
@@ -12,11 +13,13 @@
 
         public NodeStatus Tick()
         {
-            if (Status == NodeStatus.Uninitialised)
+            if (Status == NodeStatus.Uninitialised || interuptionTimer.IsFinished)
             {
                 Status = NodeStatus.Running;
                 OnEnter();
             }
+
+            interuptionTimer.Restart();
 
             OnUpdate();
 
@@ -30,7 +33,7 @@
             return returnStatus;
         }
 
-        private void Reset()
+        public void Reset()
         {
             Status = NodeStatus.Uninitialised;
             OnExit();

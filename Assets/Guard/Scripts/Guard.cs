@@ -9,7 +9,7 @@ public class Guard : MonoBehaviour
 {
     [Header("Guard Settings")]
     [SerializeField] private float moveSpeed;
-    [SerializeField] private float stoppingDistance;
+    [SerializeField] private float stoppingDistance = 0.5f;
 
     [Header("Waypoints")]
     [SerializeField] private Transform[] wayPoints;
@@ -38,12 +38,14 @@ public class Guard : MonoBehaviour
     private Transform playerTransform;
 
     private BlackBoard ninjaBlackboard;
+    private Timer recoverTimer;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         playerTransform = FindObjectOfType<PlayerMovement>().transform;
+        recoverTimer = new Timer(2, RecoverFromStun);
 
         blackBoard = new BlackBoard();
         blackBoard.SetVariable(VariableNames.CURRENT_WAYPOINT_INDEX_Int, 0);
@@ -55,7 +57,6 @@ public class Guard : MonoBehaviour
             new ActionExecuterNode(() => ninjaBlackboard.SetVariable(VariableNames.PLAYER_CHASED_Bool, false)),
             new ResettingSequenceNode(
                 new SetTargetToNextWaypoint(wayPoints),
-                new ActionExecuterNode(() => Debug.Log("Set Target After this")),
                 new MoveToTargetPositionNode(agent, moveSpeed, stoppingDistance)
             )
         );
@@ -160,9 +161,10 @@ public class Guard : MonoBehaviour
 
     public void GetStunned(float dureation)
     {
+        recoverTimer.EndTime = dureation;
+        recoverTimer.Restart();
+
         blackBoard.SetVariable(VariableNames.IS_STUNNED_Bool, true);
-        CancelInvoke(nameof(RecoverFromStun));
-        Invoke(nameof(RecoverFromStun), dureation);
     }
 
     public void RecoverFromStun()
