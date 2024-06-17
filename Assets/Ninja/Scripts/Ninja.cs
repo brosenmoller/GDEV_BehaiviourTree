@@ -24,6 +24,7 @@ public class Ninja : MonoBehaviour
 
     private NavMeshAgent agent;
     private Animator animator;
+    private Transform guardTransform;
 
     private Node tree;
     public BlackBoard blackBoard;
@@ -34,6 +35,7 @@ public class Ninja : MonoBehaviour
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         playerTransform = FindObjectOfType<PlayerMovement>().transform;
+        guardTransform = FindAnyObjectByType<Guard>().transform;
 
         blackBoard = new BlackBoard();
         blackBoard.SetVariable(VariableNames.PLAYER_CHASED_Bool, false);
@@ -52,7 +54,7 @@ public class Ninja : MonoBehaviour
                 new ActionExecuterNode(() => stateVisualizer.SetText("Hiding")),
                 new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_POSITION_Vec3, GetClosestCover().position)),
                 new MoveToTargetPositionNode(agent, moveSpeed, stoppingDistance),
-                new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.THROW_TARGET_Transfom, FindAnyObjectByType<Guard>().transform)),
+                new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.THROW_TARGET_Transfom, guardTransform)),
                 new ThrowObjectNode(smokeBomb, throwOrigin, throwSpeed, throwInterval)
             ),
             () => blackBoard.GetVariable<bool>(VariableNames.PLAYER_CHASED_Bool)
