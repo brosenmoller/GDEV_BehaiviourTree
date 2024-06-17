@@ -51,7 +51,7 @@ public class Ninja : MonoBehaviour
             new ResettingSequenceNode(
                 new ActionExecuterNode(() => stateVisualizer.SetText("Hiding")),
                 new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.TARGET_POSITION_Vec3, GetClosestCover().position)),
-                new MoveToTargetPositionNode(agent, moveSpeed, followDistance),
+                new MoveToTargetPositionNode(agent, moveSpeed, stoppingDistance),
                 new ActionExecuterNode(() => blackBoard.SetVariable(VariableNames.THROW_TARGET_Transfom, FindAnyObjectByType<Guard>().transform)),
                 new ThrowObjectNode(smokeBomb, throwOrigin, throwSpeed, throwInterval)
             ),

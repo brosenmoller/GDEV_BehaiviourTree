@@ -28,17 +28,18 @@ public class DetectObjectsNode : Node
     // Adapted from https://github.com/SebLague/Field-of-View/blob/master/Episode%2003/FieldOfView.cs
     private void FindVisibleTargets()
     {
+        Vector3 origin = controllerTransform.position + Vector3.up * 2f;
         visibleTargets.Clear();
-        int numberOfDetectedColliders = Physics.OverlapSphereNonAlloc(controllerTransform.position, viewRadius, targetsInViewRadius, targetMask);
+        int numberOfDetectedColliders = Physics.OverlapSphereNonAlloc(origin, viewRadius, targetsInViewRadius, targetMask);
 
         for (int i = 0; i < numberOfDetectedColliders; i++)
         {
             Transform target = targetsInViewRadius[i].transform;
-            Vector3 dirToTarget = (target.position - controllerTransform.position).normalized;
+            Vector3 dirToTarget = (target.position - origin).normalized;
             if (Vector3.Angle(controllerTransform.forward, dirToTarget) < viewAngle / 2)
             {
-                float dstToTarget = Vector3.Distance(controllerTransform.position, target.position);
-                if (!Physics.Raycast(controllerTransform.position, dirToTarget, dstToTarget, obstacleMask))
+                float dstToTarget = Vector3.Distance(origin, target.position);
+                if (!Physics.Raycast(origin, dirToTarget, dstToTarget, obstacleMask))
                 {
                     visibleTargets.Add(target);
                 }
